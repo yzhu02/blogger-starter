@@ -63,7 +63,6 @@ module.exports = (app) => {
 
 		let dataUri = new DataUri()
 		let image = dataUri.format('.' + post.image.contentType.split('/').pop(), post.image.data)
-		console.log(image)
 		res.render('post.ejs', {
 			post: post,
 			image: `data:${post.image.contentType};base64,${image.base64}`,
@@ -71,7 +70,7 @@ module.exports = (app) => {
 		})
 	}))
 
-	app.post('/post/:postId?', then(async (req, res) => {
+	app.post('/post/:postId?', isLoggedIn, then(async (req, res) => {
 		let postId = req.params.postId
 		if (!postId) {
 			let post = new Post()
@@ -80,6 +79,8 @@ module.exports = (app) => {
 			post.content = content
 			post.image.data = await fs.promise.readFile(file.path)
 			post.image.contentType = file.headers['content-type']
+
+			post.userId = req.user.id
 
 			await post.save()
 
