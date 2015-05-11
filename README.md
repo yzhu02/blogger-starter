@@ -34,3 +34,5 @@
 * List all user created posts with created data, modified date and comment counts on profile page.
 * View an own post and submit comments.
 * View other users' post and submit comments.
+
+(# hours spent: 16)
