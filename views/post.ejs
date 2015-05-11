@@ -13,10 +13,13 @@
 <div class="col-sm-6 col-sm-offset-3">
 
     <h1><span class="fa fa-sign-in"></span> Edit Post</h1>
+    <a href="/logout" class="btn btn-default btn-sm">Logout</a>
 
     <% if (typeof message !== 'undefined' && message.length > 0) { %>
         <div class="alert alert-danger"><%= message %></div>
     <% } %>
+
+    <hr>
 
     <form action="/post/<%= post.id %>" method="post" enctype="multipart/form-data">
 

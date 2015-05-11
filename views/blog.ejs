@@ -12,9 +12,9 @@
 <div class="container">
 
     <div class="page-header text-center">
-        <h1><span class="fa fa-user"></span> Profile <% if (user) {%> of <%= user.username%> <% } %></h1>
+        <h1><span class="fa fa-user"></span> <%= blog.ownerName%>'s Blog</h1>
+        <h2><%= blog.title%></h2>
         <a href="/logout" class="btn btn-default btn-sm">Logout</a>
-        <a href="/post" class="btn btn-default btn-sm">Create New Post</a>
     </div>
 
     <% if (typeof message !== 'undefined' && message.length > 0) { %>
@@ -25,26 +25,15 @@
 
         <div class="well">
             <!-- <h3><span class="fa fa-laptop"></span> Local</h3> -->
-
             <p>
-                <strong>Id</strong>: <%= user.id %><br>
-                <strong>User Name</strong>: <%= user.username %><br>
-                <strong>Email</strong>: <%= user.email %><br>
-                <!-- <strong>password</strong>: <%= user.password %><br> -->
-                <strong>Blog Title</strong>: <%= user.blogTitle %><br>
-                <strong>Blog Description</strong>: <%= user.blogDescription %><br>
-            </p>
-            <hr />
-            <p>
-                <%= user.posts.length%> Posts:
+                <%= blog.posts.length%> Posts:
                 <hr />
-                <% for (var i in user.posts) { var post = user.posts[i]; %>
-                    <a href="/post/<%= post.id%>"><%= post.title%></a>&nbsp; (<%= post.comments.length %> comments)<br>
+                <% for (var i in blog.posts) { var post = blog.posts[i]; %>
+                    <a href="/post/<%= post.id%>"><%= post.title%></a><br>
                     [created at: <%= post._id.getTimestamp().format("mm/dd/yyyy hh:MM:ss")%>]<br>
                     <% if(post.modifiedDate) { %>
                         [modified at: <%= post.modifiedDate.format("mm/dd/yyyy hh:MM:ss")%>]<br>
                     <% } %>
-                    <a href="/post/<%= post.id%>?verb=edit">[EDIT]</a>&nbsp; | &nbsp;<a href="/post/<%= post.id%>?verb=delete">[DELETE]</a><br>
                     <br>
                 <% } %>
             </p>

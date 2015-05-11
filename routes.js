@@ -4,6 +4,7 @@ let then = require('express-then')
 let DataUri = require('datauri')
 let isLoggedIn = require('./middleware/isLoggedIn')
 let Post = require('./models/post')
+let User = require('./models/user')
 
 module.exports = (app) => {
 	let passport = app.passport
@@ -53,8 +54,7 @@ module.exports = (app) => {
 		let postId = req.params.postId
 		if (!postId) {
 			res.render('post.ejs', {
-				post: {},
-				verb: 'Create'
+				post: {}
 			})
 			return
 		}
@@ -76,12 +76,14 @@ module.exports = (app) => {
 			let renderer = 'post.ejs'
 			if (!req.query.verb || req.query.verb.toLowerCase() !== 'edit') {
 				renderer = 'post_view.ejs'
+				post.comments = post.comments || []
 			}
 			let dataUri = new DataUri()
 			let image = dataUri.format('.' + post.image.contentType.split('/').pop(), post.image.data)
 			res.render(renderer, {
 				post: post,
-				image: `data:${post.image.contentType};base64,${image.base64}`
+				image: `data:${post.image.contentType};base64,${image.base64}`,
+				user: req.user
 			})
 		}
 	}))
@@ -115,5 +117,55 @@ module.exports = (app) => {
 
 		//res.redirect('/blog/' + encodeURI(req.user.blogTitle))
 		res.redirect('/profile')
+	}))
+
+
+	app.get('/blog/:blogOwnerId', then(async (req, res) => {
+		let blogOwnerId = req.params.blogOwnerId
+		if (!blogOwnerId) {
+			res.status(404).send('Not available')
+			return
+		}
+
+		let blogOwner = await User.promise.findById(blogOwnerId)
+		let blogOwnerPosts = await Post.promise.find({userId: {$eq: blogOwner._id}}) //TODO: sort by timestamp
+		if (!blogOwnerPosts) {
+			res.status(404).send('Blog not found')
+			return
+		}
+		let blog = {}
+		blog.id = blogOwner.id
+		blog.ownerName = blogOwner.username
+		blog.title = blogOwner.blogTitle
+		blog.posts = blogOwnerPosts
+
+		res.render("blog.ejs", {
+			blog: blog
+		})
+	}))
+
+	app.post('/post/:postId/comment', isLoggedIn, then(async (req, res) => {
+		let postId = req.params.postId
+		if (!postId) {
+			res.status(404).send('Not available')
+			return
+		}
+		let post = await Post.promise.findById(postId)
+		if (!post) {
+			res.status(404).send('Post not found')
+			return
+		}
+		post.comments = post.comments || []
+
+		let newComment = {}
+		newComment.byWho = req.user.username
+		newComment.atWhen = new Date()
+		newComment.content = req.body.comment
+
+		post.comments.push(newComment)
+	
+		await post.save()
+
+		res.redirect('/post/' + postId)
 	}))
 }

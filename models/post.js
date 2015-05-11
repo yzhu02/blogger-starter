@@ -19,7 +19,15 @@ let PostSchema = mongoose.Schema({
 		data: Buffer,
 		contentType: String
 	},
-	modifiedDate: Date
+	modifiedDate: Date,
+
+	comments: [
+		{
+			byWho: String,
+			atWhen: Date,
+			content: String
+		}
+	]
 })
 
 module.exports = mongoose.model('Post', PostSchema)
