@@ -44,6 +44,7 @@
                     <% if(post.modifiedDate) { %>
                         [modified at: <%= post.modifiedDate.format("mm/dd/yyyy hh:MM:ss")%>]<br>
                     <% } %>
+                    <a href="/post/<%= post.id%>?verb=edit">[EDIT]</a><br>
                     <br>
                 <% } %>
             </p>
