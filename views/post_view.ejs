@@ -47,7 +47,7 @@
         <div class="form-group">
             <% for (var i=0; i<post.comments.length; ++i) { var comment = post.comments[i]; %>
                 <a href=""><%= comment.byWho%></a> commented at <%= comment.atWhen.format("mm/dd/yyyy hh:MM:ss") %>:<br>
-                <%= comment.content%><br>
+                <div class="well"><%= comment.content%><br></div>
             <% } %>
         </div>
 
