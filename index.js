@@ -10,6 +10,8 @@ let mongoose = require('mongoose')
 let nodeifyit = require('nodeifyit')
 let flash = require('connect-flash')
 
+let dateformat = require('dateformat')
+
 let passportMiddleware = require('./middleware/passport')
 let routes = require('./routes')
 
@@ -64,7 +66,9 @@ app.use(flash())
 passportMiddleware(app)
 routes(app)
 
-
+Date.prototype.format = function(fmt) {
+  return dateformat(this, fmt)
+}
 
 mongoose.connect('mongodb://127.0.0.1:27017/blogger-starter')
 
