@@ -34,8 +34,9 @@ module.exports = (app) => {
 	}))
 
 	app.get('/profile', then(async (req, res) => {
-		let latestPosts = await Post.promise.find({userId: {$eq: req.user._id}})
-		req.user.latestPosts = latestPosts
+		let userPosts = await Post.promise.find({userId: {$eq: req.user._id}}) //TODO: sort by timestamp
+
+		req.user.posts = userPosts
 
 		res.render('profile.ejs', {
 			user: req.user,
@@ -75,29 +76,28 @@ module.exports = (app) => {
 
 	app.post('/post/:postId?', isLoggedIn, then(async (req, res) => {
 		let postId = req.params.postId
+		let post
 		if (!postId) {
-			let post = new Post()
-			let [{title: [title], content: [content]}, {image: [file]}] = await new multiparty.Form().promise.parse(req)
-			post.title = title
-			post.content = content
-			post.image.data = await fs.promise.readFile(file.path)
-			post.image.contentType = file.headers['content-type']
-
+			post = new Post()
 			post.userId = req.user.id
-
-			await post.save()
-
-			res.redirect('/blog/' + encodeURI(req.user.blogTitle))
-			return
+		} else {
+			post = await Post.promise.findById(postId)
+			if (!post) {
+				res.status(404).send('Post not found')
+				return
+			}
+			post.modifiedDate = new Date()
 		}
 		
-		let post = await Post.promise.findById(postId)
-		if (!post) {
-			res.status(404).send('Post not found')
-			return
-		}
+		let [{title: [title], content: [content]}, {image: [file]}] = await new multiparty.Form().promise.parse(req)
+		post.title = title
+		post.content = content
+		post.image.data = await fs.promise.readFile(file.path)
+		post.image.contentType = file.headers['content-type']
+	
+		await post.save()
 
-		//TODO: not implemented yet
-		console.log('TODO: not implemented yet')
+		//res.redirect('/blog/' + encodeURI(req.user.blogTitle))
+		res.redirect('/profile')
 	}))
 }
