@@ -65,17 +65,25 @@ module.exports = (app) => {
 			return
 		}
 
-		let verb = 'View'
-		if (req.query.verb && req.query.verb.toLowerCase() === 'edit') {
-			verb = 'Edit'
+		if (req.query.verb && req.query.verb.toLowerCase() === 'delete') {
+			Post.remove({_id: postId}, function(err) {
+				if (err) {
+					res.status(500).send(err.message)
+				}
+			})
+			res.redirect('/profile')
+		} else {
+			let renderer = 'post.ejs'
+			if (!req.query.verb || req.query.verb.toLowerCase() !== 'edit') {
+				renderer = 'post_view.ejs'
+			}
+			let dataUri = new DataUri()
+			let image = dataUri.format('.' + post.image.contentType.split('/').pop(), post.image.data)
+			res.render(renderer, {
+				post: post,
+				image: `data:${post.image.contentType};base64,${image.base64}`
+			})
 		}
-		let dataUri = new DataUri()
-		let image = dataUri.format('.' + post.image.contentType.split('/').pop(), post.image.data)
-		res.render('post.ejs', {
-			post: post,
-			image: `data:${post.image.contentType};base64,${image.base64}`,
-			verb: verb
-		})
 	}))
 
 	app.post('/post/:postId?', isLoggedIn, then(async (req, res) => {
@@ -96,8 +104,12 @@ module.exports = (app) => {
 		let [{title: [title], content: [content]}, {image: [file]}] = await new multiparty.Form().promise.parse(req)
 		post.title = title
 		post.content = content
-		post.image.data = await fs.promise.readFile(file.path)
-		post.image.contentType = file.headers['content-type']
+
+		let imgContentType = file.headers['content-type']
+		if (imgContentType && imgContentType.toLowerCase().split('/')[0] === 'image') {
+			post.image.data = await fs.promise.readFile(file.path)
+			post.image.contentType = imgContentType
+		}
 	
 		await post.save()
 
