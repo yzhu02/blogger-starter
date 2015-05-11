@@ -22,21 +22,33 @@
 
         <div class="form-group">
             <label>Title</label>
-            <input type="text" class="form-control" name="title" value="<%= post.title %>">
+            <% if (verb === 'View') { %>
+                <%= post.title %>
+            <% } else { %>
+                <input type="text" class="form-control" name="title" value="<%= post.title %>">
+            <% } %>
         </div>
         <div class="form-group">
             <label>Content</label>
-            <input type="text" class="form-control" name="content" value="<%= post.content %>">
+            <% if (verb === 'View') { %>
+                <%= post.content %>
+            <% } else { %>
+                <input type="text" class="form-control" name="content" value="<%= post.content %>">
+            <% } %>
         </div>
         <div class="form-group">
             <label>Image</label>
             <% if (post.image.data && post.image.data.length > 0) { %>
                 <img src="<%= image %>" style="height: 200px; width: 200px" />
             <% } %>
-            <input type="file" class="form-control" name="image">
+            <% if (verb !== 'View') { %>
+                <input type="file" class="form-control" name="image">
+            <% } %>
         </div>
         
-        <button type="submit" class="btn btn-warning btn-lg"><%= verb %> Post</button>
+        <% if (verb !== 'View') { %>
+            <button type="submit" class="btn btn-warning btn-lg"><%= verb %> Post</button>
+        <% } %>
     </form>
 
 </div>

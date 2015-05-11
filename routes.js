@@ -65,12 +65,16 @@ module.exports = (app) => {
 			return
 		}
 
+		let verb = 'View'
+		if (req.query.verb && req.query.verb.toLowerCase() === 'edit') {
+			verb = 'Edit'
+		}
 		let dataUri = new DataUri()
 		let image = dataUri.format('.' + post.image.contentType.split('/').pop(), post.image.data)
 		res.render('post.ejs', {
 			post: post,
 			image: `data:${post.image.contentType};base64,${image.base64}`,
-			verb: 'Edit'
+			verb: verb
 		})
 	}))
 
