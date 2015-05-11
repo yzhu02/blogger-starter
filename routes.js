@@ -33,12 +33,15 @@ module.exports = (app) => {
 	    failureFlash: true
 	}))
 
-	app.get('/profile', isLoggedIn, (req, res) => {
+	app.get('/profile', then(async (req, res) => {
+		let latestPosts = await Post.promise.find({userId: {$eq: req.user._id}})
+		req.user.latestPosts = latestPosts
+
 		res.render('profile.ejs', {
 			user: req.user,
 			message: req.flash('error')
 		})
-	})
+	}))
 
 	app.get('/logout', (req, res) => {
 		req.logout()

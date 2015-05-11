@@ -12,7 +12,7 @@
 <div class="container">
 
     <div class="page-header text-center">
-        <h1><span class="fa fa-user"></span> Profile Page</h1>
+        <h1><span class="fa fa-user"></span> Profile <% if (user) {%> of <%= user.username%> <% } %></h1>
         <a href="/logout" class="btn btn-default btn-sm">Logout</a>
         <a href="/post" class="btn btn-default btn-sm">Create New Post</a>
     </div>
@@ -24,17 +24,25 @@
     <div class="row">
 
         <div class="well">
-            <h3><span class="fa fa-laptop"></span> Local</h3>
+            <!-- <h3><span class="fa fa-laptop"></span> Local</h3> -->
 
             <p>
-                <strong>id</strong>: <%= user.id %><br>
-                <strong>username</strong>: <%= user.username %><br>
-                <strong>email</strong>: <%= user.email %><br>
-                <strong>password</strong>: <%= user.password %><br>
+                <strong>Id</strong>: <%= user.id %><br>
+                <strong>User Name</strong>: <%= user.username %><br>
+                <strong>Email</strong>: <%= user.email %><br>
+                <!-- <strong>password</strong>: <%= user.password %><br> -->
                 <strong>Blog Title</strong>: <%= user.blogTitle %><br>
                 <strong>Blog Description</strong>: <%= user.blogDescription %><br>
             </p>
+            <hr />
+            <p>
+                Latest <%= user.latestPosts.length%> Posts:<br>
                 
+                <% for (var i in user.latestPosts) {
+                    var post = user.latestPosts[i]; %>
+                    <a href="/post/<%= post.id%>"><%= post.title%></a>
+                <% } %>
+            </p>
         </div>
 
     </div>
