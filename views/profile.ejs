@@ -36,11 +36,15 @@
             </p>
             <hr />
             <p>
-                Latest <%= user.latestPosts.length%> Posts:<br>
-                
-                <% for (var i in user.latestPosts) {
-                    var post = user.latestPosts[i]; %>
-                    <a href="/post/<%= post.id%>"><%= post.title%></a>
+                <%= user.posts.length%> Posts:
+                <hr />
+                <% for (var i in user.posts) { var post = user.posts[i]; %>
+                    <a href="/post/<%= post.id%>"><%= post.title%></a><br>
+                    [created at: <%= post._id.getTimestamp().format("mm/dd/yyyy hh:MM:ss")%>]<br>
+                    <% if(post.modifiedDate) { %>
+                        [modified at: <%= post.modifiedDate.format("mm/dd/yyyy hh:MM:ss")%>]<br>
+                    <% } %>
+                    <br>
                 <% } %>
             </p>
         </div>

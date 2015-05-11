@@ -18,7 +18,8 @@ let PostSchema = mongoose.Schema({
 	image: {
 		data: Buffer,
 		contentType: String
-	}
+	},
+	modifiedDate: Date
 })
 
 module.exports = mongoose.model('Post', PostSchema)
